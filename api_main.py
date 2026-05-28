@@ -21,6 +21,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def read_root():
+    return {
+        "status": "online",
+        "message": "Production Dashboard API is running on Railway!",
+        "docs_url": "/docs"
+    }
+
 import time
 
 # Global Memory Cache to prevent heavy processing on every request
