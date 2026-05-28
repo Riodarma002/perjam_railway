@@ -27,16 +27,6 @@ def validate_environment():
 
     for var_name, description in required_vars.items():
         value = os.getenv(var_name)
-        
-        # Check Streamlit Secrets if available
-        if not value:
-            try:
-                import streamlit as st
-                if var_name in st.secrets:
-                    value = st.secrets[var_name]
-                    os.environ[var_name] = value
-            except:
-                pass
                 
         if not value or value.strip() == "":
             missing_vars.append(f"• {var_name}: {description}")
@@ -44,14 +34,6 @@ def validate_environment():
     if missing_vars:
         error_msg = "Missing Required Environment Variables:\n" + "\n".join(missing_vars)
         print(error_msg)
-        # Only use st.error if streamlit is actually running
-        try:
-            import streamlit as st
-            if st._is_running_with_streamlit:
-                st.error(error_msg)
-                st.stop()
-        except:
-            pass
 
     return True
 
@@ -67,8 +49,8 @@ ONEDRIVE_LINKS = {
 # ── Cache Settings ────────────────────────────────────────────
 CACHE_TTL_SECONDS = 60
 SYNC_INTERVAL = 60
-# Vercel has a read-only filesystem except for /tmp
-if os.getenv("VERCEL"):
+# Vercel/Railway have read-only filesystem except for /tmp
+if os.getenv("VERCEL") or os.getenv("RAILWAY_ENVIRONMENT"):
     CACHE_FILE = "/tmp/cache.pkl"
 else:
     CACHE_FILE = "data/cache.pkl"
